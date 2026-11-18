@@ -260,6 +260,25 @@ body{font-family:Tahoma,'KaiTi','楷體','BiauKai','STKaiti','DFKai-SB',sans-ser
 .opt.word{font-size:1.25rem}
 .explain .big{font-size:1.25rem;margin-bottom:4px}
 
+/* таблица спряжения */
+.opts.vtab{display:block}
+table.vt{width:100%;border-collapse:separate;border-spacing:4px;margin-bottom:8px}
+table.vt th{font-size:1.05rem;background:var(--lilac-l);border-radius:10px;padding:6px 4px;color:var(--plum)}
+table.vt th small{display:block;font-size:.68rem;font-weight:400;color:var(--plum-soft);line-height:1.3}
+table.vt td.vp{font-weight:700;font-size:1rem;text-align:left;padding:2px 4px;width:30%}
+table.vt td.vp small{display:block;font-size:.66rem;font-weight:400;color:var(--plum-soft)}
+.vcell{display:block;width:100%;font-size:1.2rem;font-weight:700;padding:10px 4px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--plum);text-align:center}
+button.vcell{cursor:pointer;font-family:inherit}
+.vend{color:var(--mint-d)}
+.vhelp{font-size:.8rem;line-height:1.5;background:var(--butter-l);border-radius:12px;padding:8px 10px;text-align:left}
+.vhelp > div{margin:3px 0}
+.vhelp .en{display:block;color:var(--plum-soft)}
+.vhelp .zh,.vhelp .ja,.vhelp .vi{display:block;color:var(--plum-soft)}
+.vhelp .vnote{border-top:1px dashed #E6D9A8;padding-top:5px;margin-top:6px}
+details.vref{background:var(--card);border:1.5px solid var(--lilac);border-radius:14px;padding:8px 10px;margin-bottom:6px}
+details.vref summary{cursor:pointer;font-weight:700;color:var(--lilac-d)}
+details.vref table.vt{margin-top:8px}
+
 </style>
 </head>
 <body>
@@ -580,6 +599,36 @@ const WHERE = [
 ];
 const FLY = {ru:'на самолёте в Москву́.', zh:'搭飛機去莫斯科。', ja:'飛行機でモスクワへ。', vi:'bằng máy bay đến Moskva.', en:'by plane to Moscow.'};
 
+
+/* ---------- ТАБЛИЦА СПРЯЖЕНИЯ: е́хать / лете́ть ---------- */
+const CONJ_ROWS = [
+  {p:['я'],          gl:['我','私は','tôi','I'],             e:['е́д','у'],   l:['леч','у́']},
+  {p:['ты'],         gl:['你','君は','bạn','you'],            e:['е́д','ешь'], l:['лет','и́шь']},
+  {p:['он','она́'],   gl:['他、她','彼、彼女は','anh ấy, cô ấy','he, she'], e:['е́д','ет'], l:['лет','и́т']},
+  {p:['мы'],         gl:['我們','私たちは','chúng tôi','we'],  e:['е́д','ем'],  l:['лет','и́м']},
+  {p:['вы'],         gl:['你們／您','あなたたち／あなたは','các bạn / ông, bà','you (pl., polite)'], e:['е́д','ете'], l:['лет','и́те']},
+  {p:['они́'],        gl:['他們','彼らは','họ','they'],         e:['е́д','ут'],  l:['лет','я́т']}
+];
+const CONJ_HELP =
+  '<div class="vhelp">'+
+  '<div>① '+T('Кто? → найди строку: я, ты, он/она́, мы, вы, они́.','Who? → find the row: я, ты, он/она́, мы, вы, они́.','誰？→ 找到那一列：я、ты、он/она́、мы、вы、они́。','だれ？→ 行をさがす：я、ты、он/она́、мы、вы、они́。','Ai? → tìm hàng: я, ты, он/она́, мы, вы, они́.')+'</div>'+
+  '<div>② '+T('Как? на такси́, на У́бере, на маши́не → столбец <b>е́хать</b>; на самолёте → столбец <b>лете́ть</b>.','How? by taxi, by Uber, by car → column <b>е́хать</b>; by plane → column <b>лете́ть</b>.','怎麼去？搭計程車、Uber、汽車 → <b>е́хать</b> 那一欄；搭飛機 → <b>лете́ть</b> 那一欄。','どうやって？タクシー・ウーバー・車 → <b>е́хать</b> の列、飛行機 → <b>лете́ть</b> の列。','Đi bằng gì? taxi, Uber, ô tô → cột <b>е́хать</b>; máy bay → cột <b>лете́ть</b>.')+'</div>'+
+  '<div>③ '+T('Нажми на форму в таблице.','Tap the form in the table.','點表格裡的那個形式。','表の中の形をタップしよう。','Bấm vào dạng động từ trong bảng.')+'</div>'+
+  '<div class="vnote">💡 '+T('Окончание (цветное) показывает, <b>кто</b> делает: я -у, ты -шь, он/она́ -т, мы -м, вы -те, они́ -ут/-ят. Это и есть <b>спряжение</b>: глагол меняется по лицам, как в английском I go — he go<b>es</b>, только форм больше. У лете́ть в форме «я» т → ч: лечу́.',
+       'The coloured ending shows <b>who</b> does it: я -у, ты -шь, он/она́ -т, мы -м, вы -те, они́ -ут/-ят. This is <b>conjugation</b>: the verb changes by person, like English I go — he go<b>es</b>, only with more forms. In лете́ть, т → ч for “я”: лечу́.',
+       '彩色的詞尾表示<b>誰</b>在做：я -у、ты -шь、он/она́ -т、мы -м、вы -те、они́ -ут/-ят。這就是<b>動詞變位</b>：動詞隨人稱改變，像英語 I go — he go<b>es</b>，只是形式更多。лете́ть 在「я」時 т → ч：лечу́。',
+       '色のついた語尾が<b>だれ</b>がするかを表します：я -у、ты -шь、он/она́ -т、мы -м、вы -те、они́ -ут/-ят。これが<b>動詞の活用</b>です。英語の I go — he go<b>es</b> と同じしくみですが、形がもっと多いです。лете́ть は「я」のとき т → ч：лечу́。',
+       'Đuôi có màu cho biết <b>ai</b> làm: я -у, ты -шь, он/она́ -т, мы -м, вы -те, они́ -ут/-ят. Đó là <b>chia động từ</b>: động từ thay đổi theo ngôi, giống tiếng Anh I go — he go<b>es</b>, nhưng có nhiều dạng hơn. Với лете́ть, ở ngôi «я» т → ч: лечу́.')+'</div></div>';
+function conjTable(clickable){
+  const cell = (st,end) => { const v=plain(st+end), lab=`${acc(st)}<b class="vend">${acc(end)}</b>`;
+    return clickable ? `<button class="opt vcell" data-v="${esc(v)}">${lab}</button>` : `<span class="vcell">${lab}</span>`; };
+  return '<table class="vt"><thead><tr><th></th>'+
+    `<th>е́хать<small>${L('（搭車）去','（乗り物で）行く','đi (xe)')} · to go by car</small><small>🚕 на такси́ · 🚗 на У́бере</small></th>`+
+    `<th>лете́ть<small>${L('飛','飛ぶ','bay')} · to fly</small><small>✈️ на самолёте</small></th></tr></thead><tbody>`+
+    CONJ_ROWS.map(r=>`<tr><td class="vp">${r.p.map(acc).join(', ')}<small>${L(r.gl[0],r.gl[1],r.gl[2])} · ${r.gl[3]}</small></td><td>${cell(r.e[0],r.e[1])}</td><td>${cell(r.l[0],r.l[1])}</td></tr>`).join('')+
+    '</tbody></table>';
+}
+
 /* вставь слово (аэропорт, самолёт) */
 const GAPS = [
   {s:'Я е́ду ___ такси́ в аэропо́рт.', a:'на', k:'такси', zh:'我搭計程車去機場。', ja:'タクシーで空港へ行きます。', vi:'Tôi đi taxi đến sân bay.', en:'I’m going to the airport by taxi.'},
@@ -808,7 +857,7 @@ const INSTR = {
   B: T('Послушай и выбери картинку.','Listen and choose the picture.','聽，選出圖片。','聞いて、絵を選ぼう。','Nghe và chọn hình.'),
   C: T('Что на картинке? Выбери слово.','What is in the picture? Choose the word.','圖片上是什麼？選出單字。','絵は何？単語を選ぼう。','Trong hình là gì? Chọn từ.'),
   D: T('Один → много. Выбери правильную форму.','One → many. Choose the correct form.','一個 → 很多個。選出正確的形式。','ひとつ → たくさん。正しい形を選ぼう。','Một → nhiều. Chọn dạng đúng.'),
-  E: T('Вставь глагол: е́хать (на такси́, на У́бере) или лете́ть (на самолёте).','Fill in: е́хать (by taxi, by Uber) or лете́ть (by plane).','填入動詞：е́хать（搭計程車、Uber）或 лете́ть（搭飛機）。','動詞を入れよう：е́хать（タクシー・ウーバーで）か лете́ть（飛行機で）。','Điền động từ: е́хать (taxi, Uber) hoặc лете́ть (máy bay).'),
+  E: T('Вставь глагол: выбери форму в таблице спряжения.','Fill in the verb: choose the form in the conjugation table.','填入動詞：在變位表裡選出正確的形式。','動詞を入れよう：活用表から形を選ぼう。','Điền động từ: chọn dạng đúng trong bảng chia động từ.'),
   F: T('Послушай и выбери, что ты слышишь.','Listen and choose what you hear.','聽，選出你聽到的。','聞いて、聞こえたものを選ぼう。','Nghe và chọn điều em nghe được.'),
   G: T('Как пишется это число? Послушай и выбери.','How is this number spelled? Listen and choose.','這個數字怎麼拼？聽一聽再選。','この数字はどう書く？聞いて選ぼう。','Số này viết thế nào? Nghe rồi chọn.'),
   H: T('Год, го́да или лет?','Год, го́да or лет?','год、го́да 還是 лет？','год、го́да、лет のどれ？','Год, го́да hay лет?'),
@@ -872,7 +921,8 @@ function renderTask(){
     if(r.sec==='H') return v==='года'?'го́да':v;
     return esc(v);
   };
-  op.innerHTML = r.opts.map(v=>`<button class="${ocls}" data-v="${esc(v)}">${lab(v)}</button>`).join('');
+  if(r.sec==='E'){ op.className='opts vtab'; op.innerHTML = conjTable(true)+CONJ_HELP; }
+  else op.innerHTML = r.opts.map(v=>`<button class="${ocls}" data-v="${esc(v)}">${lab(v)}</button>`).join('');
   op.querySelectorAll('.opt').forEach(b=>b.onclick=()=>choose(b, b.dataset.v));
   document.getElementById('qfb').innerHTML=''; document.getElementById('qfb').className='feedback';
   const ex=document.getElementById('qexp'); ex.className='explain'; ex.innerHTML='';
@@ -911,8 +961,7 @@ function explainOf(r){
     case 'B': case 'C': return big(PIC[r.k].e+' '+acc(W[r.k].w))+`<div>${glossW(r.k)}</div>`+(NOTE[r.k]||'');
     case 'D': { const o=PLUR[r.i]; return big(`${acc(o.s)} → ${acc(o.p)}`)+T('Много: после твёрдого согласного — <b>-ы</b>; -а → <b>-ы</b>.','Plural: after a hard consonant add <b>-ы</b>; -а → <b>-ы</b>.','複數：硬子音後加 <b>-ы</b>；-а → <b>-ы</b>。','複数：硬子音の後は<b>-ы</b>、-а → <b>-ы</b>。','Số nhiều: sau phụ âm cứng thêm <b>-ы</b>; -а → <b>-ы</b>.'); }
     case 'E': {
-      const tbl = (V,inf)=> `<b>${acc(inf)}</b>: ` + ['я','ты','он','мы','вы','они́'].map(p=>`${acc(p)} ${acc(V[p])}`).join(' · ');
-      return big(`${acc(r.pr)} ${acc(r.fly?LETET[r.pr]:EHAT[r.pr])}`)+`<div style="font-size:.82rem">${tbl(EHAT,'е́хать')}<br>${tbl(LETET,'лете́ть')}</div>`+
+      return big(`${acc(r.pr)} ${acc(r.fly?LETET[r.pr]:EHAT[r.pr])}`)+
         T('на такси́, на У́бере → <b>е́хать</b>; на самолёте → <b>лете́ть</b>.','by taxi / Uber → е́хать; by plane → лете́ть.','搭計程車、Uber → <b>е́хать</b>；搭飛機 → <b>лете́ть</b>。','タクシー・ウーバー → <b>е́хать</b>、飛行機 → <b>лете́ть</b>。','taxi, Uber → <b>е́хать</b>; máy bay → <b>лете́ть</b>.');
     }
     case 'F': {
@@ -975,6 +1024,7 @@ function openTrainer(){
   document.getElementById('topProg').textContent='';
   const items = SECTIONS.map(s=>`<button class="tbtn" onclick="startTrainer(['${s[0]}'])"><b>${s[0]}</b> ${s[1]}<small>${L(s[3],s[5],s[6])} · ${s[2]}</small></button>`).join('');
   document.getElementById('tlist').innerHTML =
+    `<details class="vref"><summary>📋 Спряже́ние: е́хать, лете́ть · Conjugation · ${L('動詞變位表','活用表','Bảng chia động từ')}</summary>${conjTable(false)}${CONJ_HELP.replace('<div>③','<div style="display:none">③')}</details>`+
     `<button class="tbtn all" onclick="startTrainer(SECTIONS.map(s=>s[0]))">🔀 Всё вперемешку<small>Everything mixed · ${L('全部混合','ぜんぶまぜて','Trộn tất cả')}</small></button>`+items;
   show('scr-tmenu');
 }
@@ -1468,4 +1518,3 @@ syncClock();
 </script>
 </body>
 </html>
-
